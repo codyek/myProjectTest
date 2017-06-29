@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>web socket page</title>
+<script type="text/javascript" th:src="@{/resources/js/jquery.js}"></script>
+</head>
+<body>
+	<p>welcome web socket page!!</p>
+	<form id="help-form" action="" method="post">
+		<input id="username" class="text" name="username" maxLength="20" type="text"/>
+		<br/>
+		<input id="info" class="text" name="info" maxLength="20" type="text"/>
+		<br/>
+		<input id="help-submit" type="submit" value="提交"/>
+	</form>
+
+</body>
+<script th:inline="javascript">
+	$().ready(function() {
+
+		require(["jquery", "formUtil"], function($) {
+
+			var url = 'ws://' + window.location.host + '/web/count';
+			var ws = new WebSocket(url);
+			ws.onopen = function(e) {
+				// ws.send('hello');
+			};
+
+			ws.onmessage = function(e) {
+				alert(e.data);
+			};
+
+			ws.onerror = function(e) {
+				alert(e);
+			};
+
+			$('body').one('DOMNodeRemoved', '#start-help', function(e) {//执行一次以后，自动销毁监听事件
+				ws.close();
+			});
+
+			$('#help-submit').on('click', function() {
+				var formData = $('#help-form').serializeJson();
+				ws.send(JSON.stringify(formData));
+			});
+
+		});
+	});
+</script>
+</html>
